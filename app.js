@@ -105,13 +105,13 @@ const REST = {
 };
 
 const GENERIC_CHECKLIST = [
-  { id: "pas", label: "Pas du jour (objectif 8 000, idéal 10 000)" },
-  { id: "alimentation", label: "Alimentation respectée" },
-  { id: "eau", label: "Eau (2 L minimum)" },
-  { id: "seance", label: "Séance réalisée (si prévue)" },
-  { id: "cardio", label: "Cardio / marche" },
-  { id: "sommeil", label: "Sommeil correct" },
-  { id: "grignotage", label: "Aucun grignotage" }
+  { id: "pas", label: "Pas du jour", hint: "objectif 8 000, idéal 10 000", type: "number", unit: "pas", threshold: 8000, placeholder: "ex: 9200" },
+  { id: "alimentation", label: "Alimentation respectée", type: "bool" },
+  { id: "eau", label: "Eau (2 L minimum)", type: "bool" },
+  { id: "seance", label: "Séance réalisée (si prévue)", type: "bool" },
+  { id: "exercice", label: "Cardio / marche", hint: "minutes", type: "number", unit: "min", threshold: 1, placeholder: "ex: 25" },
+  { id: "sommeil", label: "Sommeil correct", type: "bool" },
+  { id: "grignotage", label: "Aucun grignotage", type: "bool" }
 ];
 
 const NUTRITION = {
@@ -258,7 +258,12 @@ function dayTotalItems(dayName) {
 function dayCheckedItems(week, dayName) {
   const day = getDay(week, dayName);
   let checked = 0;
-  GENERIC_CHECKLIST.forEach((it) => { if (day.generic[it.id]) checked++; });
+  GENERIC_CHECKLIST.forEach((it) => {
+    const v = day.generic[it.id];
+    if (it.type === "number") {
+      if (v != null && v >= it.threshold) checked++;
+    } else if (v) checked++;
+  });
   const sportState = isTrainingDay(dayName) ? day.training : day.rest;
   Object.values(sportState).forEach((v) => { if (v) checked++; });
   NUTRITION_ORDER.forEach((g) => {
@@ -293,18 +298,47 @@ function scoreClass(pct) {
   return "score-red";
 }
 
-function getProgressInfo() {
+function computeWeekDayForDate(targetDate) {
   const start = new Date(state.settings.startMonday + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const d = new Date(targetDate);
+  d.setHours(0, 0, 0, 0);
   start.setHours(0, 0, 0, 0);
-  const diffDays = Math.round((today - start) / 86400000);
+  const diffDays = Math.round((d - start) / 86400000);
   let week = Math.floor(diffDays / 7) + 1;
   let dayIdx = ((diffDays % 7) + 7) % 7;
   const outOfRange = week < 1 || week > 6;
   if (week < 1) { week = 1; dayIdx = 0; }
   if (week > 6) { week = 6; dayIdx = 6; }
   return { week, dayName: DAYS_ORDER[dayIdx], outOfRange, diffDays };
+}
+
+function getProgressInfo() {
+  return computeWeekDayForDate(new Date());
+}
+
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const pas = params.get("pas");
+  const exercice = params.get("exercice");
+  if (pas === null && exercice === null) return;
+  const dateParam = params.get("date");
+  const targetDate = dateParam ? new Date(dateParam + "T00:00:00") : new Date();
+  const info = computeWeekDayForDate(targetDate);
+  const day = getDay(info.week, info.dayName);
+  const applied = [];
+  const pasVal = pas !== null ? parseInt(pas, 10) : NaN;
+  if (!isNaN(pasVal)) { day.generic.pas = pasVal; applied.push(pasVal + " pas"); }
+  const exerciceVal = exercice !== null ? parseInt(exercice, 10) : NaN;
+  if (!isNaN(exerciceVal)) { day.generic.exercice = exerciceVal; applied.push(exerciceVal + " min d'exercice"); }
+  if (applied.length) {
+    saveState();
+    history.replaceState(null, "", window.location.pathname);
+    ui.selectedWeek = info.week;
+    ui.selectedDay = info.dayName;
+    ui.dayInitialized = true;
+    ui.dayPanel = "sport";
+    setTimeout(() => alert("Données Santé importées : " + applied.join(", ")), 50);
+  }
 }
 
 function navigateTo(view) {
@@ -372,6 +406,44 @@ function renderChecklistGroup(container, items, stateObj, onChange, optionalTag)
   });
 }
 
+function renderGenericChecklist(container, items, stateObj, onChange) {
+  container.innerHTML = "";
+  items.forEach((it) => {
+    const row = document.createElement("div");
+    if (it.type === "number") {
+      row.className = "check-item number-row";
+      const label = document.createElement("label");
+      label.textContent = it.label + (it.hint ? " (" + it.hint + ")" : "");
+      const input = document.createElement("input");
+      input.type = "number";
+      input.inputMode = "decimal";
+      input.placeholder = it.placeholder || "";
+      input.value = stateObj[it.id] != null ? stateObj[it.id] : "";
+      input.addEventListener("change", () => {
+        const v = input.value === "" ? null : parseFloat(input.value);
+        stateObj[it.id] = v == null || isNaN(v) ? null : v;
+        saveState();
+        onChange && onChange();
+      });
+      row.appendChild(label);
+      row.appendChild(input);
+    } else {
+      row.className = "check-item";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = "chk-" + Math.random().toString(36).slice(2);
+      cb.checked = !!stateObj[it.id];
+      cb.addEventListener("change", () => { stateObj[it.id] = cb.checked; saveState(); onChange && onChange(); });
+      const label = document.createElement("label");
+      label.htmlFor = cb.id;
+      label.textContent = it.label;
+      row.appendChild(cb);
+      row.appendChild(label);
+    }
+    container.appendChild(row);
+  });
+}
+
 function setDayPanel(panel) {
   ui.dayPanel = panel;
   document.querySelectorAll("#day-tabs .segment-btn").forEach((btn) => {
@@ -405,7 +477,7 @@ function renderDayView() {
   badge.textContent = pct + "%";
   badge.className = "score-badge " + scoreClass(pct);
 
-  renderChecklistGroup(document.getElementById("day-generic-checklist"), GENERIC_CHECKLIST, day.generic, () => renderDayView());
+  renderGenericChecklist(document.getElementById("day-generic-checklist"), GENERIC_CHECKLIST, day.generic, () => renderDayView());
 
   const trainingCard = document.getElementById("day-training-card");
   const restCard = document.getElementById("day-rest-card");
@@ -739,6 +811,8 @@ function registerServiceWorker() {
 
 document.addEventListener("DOMContentLoaded", () => {
   bindEvents();
-  navigateTo("home");
+  const hadUrlData = new URLSearchParams(window.location.search).has("pas") || new URLSearchParams(window.location.search).has("exercice");
+  applyUrlParams();
+  navigateTo(hadUrlData ? "day" : "home");
   registerServiceWorker();
 });

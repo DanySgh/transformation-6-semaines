@@ -41,6 +41,28 @@ Ce dépôt est déjà configuré ainsi : déploiement en ligne sur `https://dany
 3. Choisis **Ajouter à l'écran d'accueil**.
 4. Ouvre ensuite l'app depuis l'icône sur l'écran d'accueil : elle s'ouvre en plein écran, comme une vraie app.
 
+## Connecter les pas / minutes d'exercice de l'Apple Watch
+
+Un site web n'a pas accès à HealthKit (Apple ne l'autorise que pour les apps natives). La solution gratuite et sans serveur : un **Raccourci** (app Shortcuts) qui lit l'app Santé puis ouvre l'app avec les valeurs en paramètres d'URL — l'app les enregistre automatiquement sur le bon jour.
+
+1. Ouvre l'app **Raccourcis** sur ton iPhone → onglet **Raccourcis** → **+** pour créer un nouveau raccourci.
+2. Ajoute l'action **Obtenir des échantillons de santé** → type *Nombre de pas* → plage *Aujourd'hui*.
+3. Ajoute **Calculer une statistique** → *Somme* sur le résultat précédent (donne le total de pas du jour).
+4. Répète les étapes 2-3 pour le type *Minutes d'exercice*.
+5. Ajoute l'action **Texte**, et compose :
+   `https://danysgh.github.io/transformation-6-semaines/?pas=VARIABLE_PAS&exercice=VARIABLE_EXERCICE`
+   (insère les résultats des étapes 3 comme variables à la place de `VARIABLE_PAS` / `VARIABLE_EXERCICE`).
+6. Ajoute l'action **Ouvrir les URL** avec ce texte.
+7. Nomme le raccourci (ex: "Maj Suivi 6 Semaines") et enregistre.
+
+Ensuite, deux façons de l'utiliser :
+- **Manuellement** : tape le raccourci depuis l'écran d'accueil ou le widget Raccourcis quand tu veux mettre à jour pas/exercice du jour.
+- **Automatiquement** : onglet **Automatisation** → **+** → **Heure de la journée** (ex: 21h00 tous les jours) → action **Exécuter le raccourci** → choisis le raccourci → désactive **Demander avant d'exécuter** pour qu'il tourne sans confirmation.
+
+L'app détecte les paramètres `?pas=...&exercice=...` à l'ouverture, les enregistre sur le jour correspondant (ajoute `&date=AAAA-MM-JJ` dans le raccourci si tu veux viser un autre jour), affiche une confirmation, puis nettoie l'URL.
+
+Si tu ne veux pas configurer ce raccourci, les deux champs **Pas du jour** et **Cardio / marche** restent saisissables à la main dans l'onglet *Sport* de la page du jour.
+
 ## Sauvegarder / exporter mes données
 
 Toutes les données (checklist, poids, photos, notes) sont sauvegardées automatiquement dans `localStorage`, sur cet appareil uniquement.
