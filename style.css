@@ -221,7 +221,7 @@ details.card summary::-webkit-details-marker { display: none; }
   color: var(--text-dim);
 }
 
-input, textarea {
+input:not([type="checkbox"]), textarea {
   background: var(--bg-card-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -230,6 +230,15 @@ input, textarea {
   font-size: 15px;
   width: 100%;
   font-family: inherit;
+}
+
+input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  accent-color: var(--green);
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .text-input { margin-bottom: 10px; }
@@ -278,6 +287,34 @@ input, textarea {
 .score-green { background: rgba(46,204,113,0.18); color: var(--green); }
 .score-orange { background: rgba(230,162,60,0.18); color: var(--orange); }
 .score-red { background: rgba(231,76,60,0.18); color: var(--red); }
+
+.segmented {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 14px;
+  gap: 4px;
+}
+
+.segment-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 4px;
+  border-radius: 9px;
+}
+
+.segment-btn.active {
+  background: var(--green);
+  color: #06140c;
+}
+
+.day-panel.hidden { display: none; }
 
 .checklist { display: flex; flex-direction: column; gap: 10px; }
 

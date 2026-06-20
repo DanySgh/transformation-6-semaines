@@ -372,6 +372,16 @@ function renderChecklistGroup(container, items, stateObj, onChange, optionalTag)
   });
 }
 
+function setDayPanel(panel) {
+  ui.dayPanel = panel;
+  document.querySelectorAll("#day-tabs .segment-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.panel === panel);
+  });
+  document.querySelectorAll(".day-panel").forEach((el) => {
+    el.classList.toggle("hidden", el.id !== "day-panel-" + panel);
+  });
+}
+
 function renderDayView() {
   const prog = getProgressInfo();
   if (!ui.dayInitialized) {
@@ -379,6 +389,8 @@ function renderDayView() {
     ui.selectedDay = prog.dayName;
     ui.dayInitialized = true;
   }
+  if (!ui.dayPanel) ui.dayPanel = "sport";
+  setDayPanel(ui.dayPanel);
   const week = ui.selectedWeek, dayName = ui.selectedDay;
   const day = getDay(week, dayName);
 
@@ -657,6 +669,10 @@ function bindEvents() {
   document.getElementById("btn-reset").addEventListener("click", resetData);
   document.getElementById("day-prev").addEventListener("click", () => shiftDay(-1));
   document.getElementById("day-next").addEventListener("click", () => shiftDay(1));
+
+  document.querySelectorAll("#day-tabs .segment-btn").forEach((btn) => {
+    btn.addEventListener("click", () => setDayPanel(btn.dataset.panel));
+  });
 
   ["note-energie", "note-faim", "note-difficulte", "note-observation", "note-libre"].forEach((id) => {
     document.getElementById(id).addEventListener("input", (e) => {

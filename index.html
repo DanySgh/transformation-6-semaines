@@ -117,38 +117,50 @@
       <span class="score-badge" id="day-score-badge">0%</span>
     </div>
 
-    <div class="card">
-      <h3>Checklist du jour</h3>
-      <div id="day-generic-checklist" class="checklist"></div>
+    <div class="segmented" id="day-tabs">
+      <button class="segment-btn active" data-panel="sport">Sport</button>
+      <button class="segment-btn" data-panel="nutrition">Nutrition</button>
+      <button class="segment-btn" data-panel="notes">Notes</button>
     </div>
 
-    <div class="card" id="day-training-card">
-      <h3 id="day-training-title">Séance</h3>
-      <div id="day-training-checklist" class="checklist"></div>
+    <div id="day-panel-sport" class="day-panel">
+      <div class="card">
+        <h3>Checklist du jour</h3>
+        <div id="day-generic-checklist" class="checklist"></div>
+      </div>
+
+      <div class="card" id="day-training-card">
+        <h3 id="day-training-title">Séance</h3>
+        <div id="day-training-checklist" class="checklist"></div>
+      </div>
+
+      <div class="card" id="day-rest-card">
+        <h3 id="day-rest-title">Jour sans muscu</h3>
+        <div id="day-rest-checklist" class="checklist"></div>
+      </div>
     </div>
 
-    <div class="card" id="day-rest-card">
-      <h3 id="day-rest-title">Jour sans muscu</h3>
-      <div id="day-rest-checklist" class="checklist"></div>
+    <div id="day-panel-nutrition" class="day-panel hidden">
+      <div class="card">
+        <h3>Nutrition du jour</h3>
+        <div id="day-nutrition" class="nutrition-groups"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>Nutrition du jour</h3>
-      <div id="day-nutrition" class="nutrition-groups"></div>
-    </div>
-
-    <div class="card">
-      <h3>Notes du jour</h3>
-      <label class="field-label" for="note-energie">Énergie / fatigue</label>
-      <input type="text" id="note-energie" class="text-input" placeholder="ex: en forme, fatigué...">
-      <label class="field-label" for="note-faim">Faim</label>
-      <input type="text" id="note-faim" class="text-input" placeholder="ex: faible, normale, forte...">
-      <label class="field-label" for="note-difficulte">Difficulté</label>
-      <input type="text" id="note-difficulte" class="text-input" placeholder="ex: séance dure, facile...">
-      <label class="field-label" for="note-observation">Observation ventre / pecs / poids</label>
-      <input type="text" id="note-observation" class="text-input" placeholder="ressenti physique du jour">
-      <label class="field-label" for="note-libre">Notes libres</label>
-      <textarea id="note-libre" class="text-input" rows="3" placeholder="autres remarques..."></textarea>
+    <div id="day-panel-notes" class="day-panel hidden">
+      <div class="card">
+        <h3>Notes du jour</h3>
+        <label class="field-label" for="note-energie">Énergie / fatigue</label>
+        <input type="text" id="note-energie" class="text-input" placeholder="ex: en forme, fatigué...">
+        <label class="field-label" for="note-faim">Faim</label>
+        <input type="text" id="note-faim" class="text-input" placeholder="ex: faible, normale, forte...">
+        <label class="field-label" for="note-difficulte">Difficulté</label>
+        <input type="text" id="note-difficulte" class="text-input" placeholder="ex: séance dure, facile...">
+        <label class="field-label" for="note-observation">Observation ventre / pecs / poids</label>
+        <input type="text" id="note-observation" class="text-input" placeholder="ressenti physique du jour">
+        <label class="field-label" for="note-libre">Notes libres</label>
+        <textarea id="note-libre" class="text-input" rows="3" placeholder="autres remarques..."></textarea>
+      </div>
     </div>
   </section>
 
