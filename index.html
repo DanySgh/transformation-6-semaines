@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Transformation 6 Semaines</title>
+<meta name="description" content="Suivi quotidien du programme sportif et nutritionnel sur 6 semaines.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0f0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="6 Semaines">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-title">Transformation 6 Semaines</div>
+  <button id="btn-settings" class="icon-btn" aria-label="Réglages">⚙️</button>
+</header>
+
+<main id="app">
+
+  <section id="view-home" class="view">
+    <p class="quote" id="home-quote"></p>
+
+    <div class="card hero-card">
+      <div class="hero-row">
+        <div class="hero-stat">
+          <span class="hero-label">Semaine</span>
+          <span class="hero-value" id="home-week">–</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-label">Jour</span>
+          <span class="hero-value" id="home-day">–</span>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="home-progress-fill"></div></div>
+        <div class="progress-meta">
+          <span id="home-progress-pct">0%</span>
+          <span id="home-progress-count" class="dim"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">Poids départ</span>
+        <span class="stat-value" id="home-poids-depart">–</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Poids actuel</span>
+        <span class="stat-value" id="home-poids-actuel">–</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Objectif</span>
+        <span class="stat-value" id="home-poids-objectif">–</span>
+      </div>
+    </div>
+
+    <div class="btn-grid">
+      <button class="btn btn-primary" data-nav="day">Aujourd'hui</button>
+      <button class="btn" data-nav="weeks">Voir les 6 semaines</button>
+      <button class="btn" data-nav="weight">Suivi poids</button>
+      <button class="btn" data-nav="photos">Photos</button>
+      <button class="btn btn-danger" id="btn-reset">Réinitialiser</button>
+    </div>
+
+    <details class="card install-card">
+      <summary>📱 Installer sur iPhone</summary>
+      <ol>
+        <li>Ouvrir ce site dans Safari</li>
+        <li>Toucher le bouton Partager</li>
+        <li>Choisir « Ajouter à l'écran d'accueil »</li>
+        <li>Ouvrir l'app depuis l'écran d'accueil</li>
+      </ol>
+    </details>
+
+    <details class="card settings-card" id="settings-panel">
+      <summary>Réglages &amp; données</summary>
+      <div class="settings-row">
+        <label for="setting-start-date">Date de départ (lundi semaine 1)</label>
+        <input type="date" id="setting-start-date">
+      </div>
+      <div class="settings-row">
+        <label for="setting-poids-depart">Poids de départ (kg)</label>
+        <input type="number" step="0.1" id="setting-poids-depart" inputmode="decimal">
+      </div>
+      <div class="settings-row">
+        <label for="setting-poids-objectif">Objectif poids (kg)</label>
+        <input type="number" step="0.1" id="setting-poids-objectif" inputmode="decimal">
+      </div>
+      <div class="settings-actions">
+        <button class="btn" id="btn-export">Exporter mes données (JSON)</button>
+        <button class="btn" id="btn-import">Importer un fichier JSON</button>
+        <input type="file" id="input-import" accept="application/json" hidden>
+      </div>
+    </details>
+  </section>
+
+  <section id="view-day" class="view hidden">
+    <div class="view-header">
+      <button class="link-btn" id="day-prev">‹</button>
+      <div class="view-header-title">
+        <div id="day-title">—</div>
+        <div id="day-subtitle" class="dim small"></div>
+      </div>
+      <button class="link-btn" id="day-next">›</button>
+    </div>
+
+    <div class="card score-card">
+      <span class="score-label">Score du jour</span>
+      <span class="score-badge" id="day-score-badge">0%</span>
+    </div>
+
+    <div class="card">
+      <h3>Checklist du jour</h3>
+      <div id="day-generic-checklist" class="checklist"></div>
+    </div>
+
+    <div class="card" id="day-training-card">
+      <h3 id="day-training-title">Séance</h3>
+      <div id="day-training-checklist" class="checklist"></div>
+    </div>
+
+    <div class="card" id="day-rest-card">
+      <h3 id="day-rest-title">Jour sans muscu</h3>
+      <div id="day-rest-checklist" class="checklist"></div>
+    </div>
+
+    <div class="card">
+      <h3>Nutrition du jour</h3>
+      <div id="day-nutrition" class="nutrition-groups"></div>
+    </div>
+
+    <div class="card">
+      <h3>Notes du jour</h3>
+      <label class="field-label" for="note-energie">Énergie / fatigue</label>
+      <input type="text" id="note-energie" class="text-input" placeholder="ex: en forme, fatigué...">
+      <label class="field-label" for="note-faim">Faim</label>
+      <input type="text" id="note-faim" class="text-input" placeholder="ex: faible, normale, forte...">
+      <label class="field-label" for="note-difficulte">Difficulté</label>
+      <input type="text" id="note-difficulte" class="text-input" placeholder="ex: séance dure, facile...">
+      <label class="field-label" for="note-observation">Observation ventre / pecs / poids</label>
+      <input type="text" id="note-observation" class="text-input" placeholder="ressenti physique du jour">
+      <label class="field-label" for="note-libre">Notes libres</label>
+      <textarea id="note-libre" class="text-input" rows="3" placeholder="autres remarques..."></textarea>
+    </div>
+  </section>
+
+  <section id="view-weeks" class="view hidden">
+    <div class="view-header">
+      <div class="view-header-title"><div>Les 6 semaines</div></div>
+    </div>
+    <div id="weeks-list"></div>
+  </section>
+
+  <section id="view-weight" class="view hidden">
+    <div class="view-header"><div class="view-header-title"><div>Suivi poids</div></div></div>
+
+    <div class="card stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">Départ</span>
+        <span class="stat-value" id="weight-depart">–</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Actuel</span>
+        <span class="stat-value" id="weight-actuel">–</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Perte</span>
+        <span class="stat-value" id="weight-perte">–</span>
+      </div>
+    </div>
+
+    <p class="quote" id="weight-message"></p>
+
+    <div class="card">
+      <canvas id="weight-chart" width="320" height="180"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Ajouter une pesée</h3>
+      <div class="settings-row">
+        <label for="weight-date">Date</label>
+        <input type="date" id="weight-date">
+      </div>
+      <div class="settings-row">
+        <label for="weight-value">Poids (kg)</label>
+        <input type="number" step="0.1" id="weight-value" inputmode="decimal" placeholder="ex: 82.4">
+      </div>
+      <button class="btn btn-primary" id="btn-add-weight">Enregistrer la pesée</button>
+    </div>
+
+    <div class="card">
+      <h3>Historique</h3>
+      <div id="weight-history"></div>
+    </div>
+  </section>
+
+  <section id="view-photos" class="view hidden">
+    <div class="view-header"><div class="view-header-title"><div>Photos</div></div></div>
+    <p class="quote">Photo chaque dimanche matin. Juge l'évolution, pas seulement la balance.</p>
+    <div id="photos-list"></div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn" data-nav="home" data-icon="🏠">Accueil</button>
+  <button class="nav-btn" data-nav="day" data-icon="✅">Jour</button>
+  <button class="nav-btn" data-nav="weeks" data-icon="📅">Semaines</button>
+  <button class="nav-btn" data-nav="weight" data-icon="⚖️">Poids</button>
+  <button class="nav-btn" data-nav="photos" data-icon="📷">Photos</button>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
