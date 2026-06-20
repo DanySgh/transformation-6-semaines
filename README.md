@@ -1,5 +1,7 @@
 # Transformation 6 Semaines
 
+🔗 **App en ligne : [danysgh.github.io/transformation-6-semaines](https://danysgh.github.io/transformation-6-semaines/)**
+
 Mini application web (PWA) pour suivre un programme de transformation physique sur 6 semaines : checklist sportive et nutritionnelle quotidienne, suivi de poids, photos hebdomadaires, notes et score de régularité.
 
 100% HTML / CSS / JavaScript, sans dépendance, sans base de données, sans compte. Toutes les données sont stockées en local sur ton téléphone (`localStorage`).
@@ -27,6 +29,8 @@ Aucune installation nécessaire. Deux options :
    ```
 2. Active GitHub Pages : Settings → Pages → Source = branche `main`, dossier `/ (root)`.
 3. Ton app sera disponible à l'adresse `https://<ton-pseudo-github>.github.io/transformation-6-semaines/`.
+
+Ce dépôt est déjà configuré ainsi : déploiement en ligne sur `https://danysgh.github.io/transformation-6-semaines/`.
 
 (Le même dossier fonctionne aussi tel quel sur Netlify ou Vercel : il suffit de glisser-déposer le dossier ou de connecter le dépôt, sans configuration de build.)
 
